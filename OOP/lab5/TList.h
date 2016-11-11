@@ -74,5 +74,5 @@ template <typename T> class TList {
 };
 
 #include "TList.hpp"
-
+#include "TIterator.hpp"
 #endif
