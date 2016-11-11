@@ -1,5 +1,4 @@
-#include "TList.h"
-
+#ifdef TLIST_H
 template <typename T> TList<T>::TNode::TNode() {
   item = std::make_shared<T>();
   next = nullptr;
@@ -35,7 +34,7 @@ template <typename T> bool TList<T>::PushFront(const std::shared_ptr<T>& obj) {
 template <typename T> bool TList<T>::Push(const std::shared_ptr<T>& obj, int pos) {
   if (pos == 1 || length == 0)
     return PushFront(obj);
-  if (pos < 0 || pos > length)
+  if (pos < 0 || pos > length + 1)
     return false;
 
   auto iter = head->next;
@@ -107,3 +106,5 @@ template <typename A> std::ostream& operator<< (std::ostream& os, const TList<A>
   
   return os;
 }
+
+#endif
