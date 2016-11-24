@@ -2,12 +2,10 @@
 #define TLIST_H
 #include <memory>
 #include <iostream>
-//#include "iterator.h"
 
 template <typename T> class TList {
  private:
   class TNode {
-  private:
   public:
     TNode();
     TNode(const std::shared_ptr<T>&);
@@ -18,40 +16,17 @@ template <typename T> class TList {
 
   };
 
-  template <typename node, typename M>
+  template <typename N, typename M>
     class TIterator {
   private:
-    node nodePtr;
+    N nodePtr;
   public:
-    TIterator(node n) {
-      nodePtr = n;
-    }
-    
-    std::shared_ptr<M> operator* () {
-      return nodePtr->GetItem();
-    }
-
-    std::shared_ptr<M> operator-> () {
-      return nodePtr->GetItem();
-    }
-    
-    void operator ++ () {
-      nodePtr = nodePtr->GetNext();
-    }
-    /*  
-    TIterator operator ++ (int) {
-      TIterator iter(*this);
-      ++(*this);
-      return iter;
-    }
-    */
-    bool operator == (TIterator const& i) {
-      return nodePtr == i.nodePtr;
-    }
-  
-    bool operator != (TIterator const& i) {
-      return !(*this == i);
-    }
+    TIterator(const N&);
+    std::shared_ptr<M> operator* ();
+    std::shared_ptr<M> operator-> ();
+    void operator ++ ();
+    bool operator == (const TIterator&);
+    bool operator != (const TIterator&);
   };
  
   int length;

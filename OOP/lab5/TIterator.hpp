@@ -1,34 +1,26 @@
 #ifdef TLIST_H
-template <typename T> TList<T>::TIterator::TIterator(node n) {
-  nodePtr = n;
+template <typename T> template <typename N, typename M> TList<T>::TIterator<N, M>::TIterator(const N& node) {
+  nodePtr = node;
 }
     
-template <typename T> std::shared_ptr<M> TList<T>::TIterator::operator* () {
+template <typename T> template <typename N, typename M> std::shared_ptr<M> TList<T>::TIterator<N, M>::operator* () {
   return nodePtr->GetItem();
 }
 
-template <typename T> std::shared_ptr<M> TList<T>::TIterator::operator-> () {
+template <typename T> template <typename N, typename M> std::shared_ptr<M> TList<T>::TIterator<N, M>::operator-> () {
   return nodePtr->GetItem();
 }
     
-template <typename T> void TList<T>::TIterator::operator ++ () {
+template <typename T> template <typename N, typename M> void TList<T>::TIterator<N, M>::operator ++ () {
   nodePtr = nodePtr->GetNext();
 }
 
-/*  
-    TIterator operator ++ (int) {
-    TIterator iter(*this);
-    ++(*this);
-    return iter;
-    }
-*/
-
-template <typename T> bool TList<T>::TIterator::operator == (TIterator const& i) {
-  return nodePtr == i.nodePtr;
+template <typename T> template <typename N, typename M> bool TList<T>::TIterator<N, M>::operator == (TIterator const& other) {
+  return nodePtr == other.nodePtr;
 }
 
-template <typename T> bool TList<T>::TIterator::operator != (TIterator const& i) {
-  return !(*this == i);
+template <typename T> template <typename N, typename M> bool TList<T>::TIterator<N, M>::operator != (TIterator const& other) {
+  return !(*this == other);
 }
 
 #endif
