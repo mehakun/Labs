@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+#define WEIRD_CONST 10
 
 typedef struct TSmth {
   int* deck;
@@ -55,16 +56,16 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 0; i < iterations;i++) {
+      pthread_join(process[i], NULL);
       result += arr[i].isEqual;
-      free(arr[i].deck);
     }
     printf("Chance is %f\n", result / iterations);
 
   } else {
     TSmth arr[threads];
     pthread_t process[threads];
-
-    for (int i = 0; i < threads; i++) {
+    //    printf("iterations / threads %d\n", iterations / threads);
+    for (int i = 0; i < threads - 1; i++) {
       arr[i].deck = malloc(sizeof(int) * 2 * (iterations / threads));
       arr[i].isEqual = 0;
       arr[i].iterations = 2 * (iterations / threads);
@@ -76,10 +77,23 @@ int main(int argc, char* argv[]) {
 
     }
 
-    for (int i = 0; i < threads;i++) {
+    for (int i = 0; i < threads - 1;i++) {
+      pthread_join(process[i], NULL);
       result += arr[i].isEqual;
       free(arr[i].deck);
     }
+    //    printf("(iterations - iterations / threads-1) %d\n", (iterations - iterations / threads * threads));
+    arr[threads-1].deck = malloc(sizeof(int) * 2 * (iterations - iterations / threads * threads));
+    arr[threads-1].isEqual = 0;
+    arr[threads-1].iterations = 2 * (iterations - iterations / threads * threads);
+    if (pthread_create(&process[threads-1], NULL, randr, (void*)&arr[threads-1])) {
+      perror("pthread_create");
+      exit(-1);
+    }
+
+    pthread_join(process[threads-1], NULL);
+    result += arr[threads-1].isEqual;
+    free(arr[threads-1].deck);
     printf("Chance is %f\n", result / iterations);
     
   }  

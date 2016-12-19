@@ -43,21 +43,18 @@ int main(void)
   TPatricia Test;
   std::vector<std::string> keys;
   std::vector<unsigned long long> values;
-  std::map<std::string, unsigned long long> map;
-  clock_t start;
-  clock_t end;
-  unsigned int size;
-  std::cin >> size;
+  unsigned int size = 10000;
+  //  std::cin >> size;
 
   for(unsigned int i = 0; i < size; i++) {
     values.push_back(rand64bits());
     keys.push_back(generateRandomString(256));
   }
-  start = clock();
+  //  start = clock();
   for (unsigned int i = 0; i < size; i++)
     Test.Insert(keys[i], values[i]);
-  end = clock();
-  
+  //  end = clock();
+  /*
   std::cout << "Patricia insert time is: " 
             << (double)(end - start) / CLOCKS_PER_SEC << " seconds" << std::endl;
 
@@ -68,9 +65,10 @@ int main(void)
   std:: cout << "std::map insert time is: " 
              << (double)(end - start) / CLOCKS_PER_SEC << " seconds"<< std::endl;
   start = clock();
+  */
   for (unsigned int i = 0; i < size; i++)
     Test.Delete(keys[i]);
-  end = clock();
+  /*  end = clock();
   
   std::cout << "Patricia delete time is: " 
             << (double)(end - start) / CLOCKS_PER_SEC << " seconds" << std::endl;
@@ -81,6 +79,6 @@ int main(void)
   end = clock();
   std:: cout << "std::map delete time is: " 
              << (double)(end - start) / CLOCKS_PER_SEC << " seconds"<< std::endl;
-
+  */
   return 0;
 }

@@ -32,12 +32,17 @@ TPatricia::TPatricia() {
 
 int TPatricia::GetBit(const std::string& key, const int& index) {
   if (index < 0) return 2;
-  
+  /*  
   unsigned int byteNum = index >> 3;
   unsigned int bitNum = index & 7;
   unsigned char symbol = key[byteNum];
   int bit = (symbol >> bitNum) & 1;
-  
+  */
+  unsigned int byteNum = index * 8;
+  unsigned int bitNum = index % 8;
+  unsigned char symbol = key[byteNum];
+  int bit = (symbol >> bitNum) % 2;
+
   return bit;
 }
 
@@ -280,7 +285,6 @@ bool TPatricia::DeSerialize(const std::string& filename) {
       
       while (fscanf(fp, "%s %llu %d#", tmp, &value, &bit) == 3) {
         key.assign(tmp);
-
         while ((parent->bit < child->bit) && (child->bit < bit)) {
           parent = child;
           child = GetBit(key, child->bit) ? child->right : child->left;

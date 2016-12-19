@@ -10,7 +10,7 @@
     lislength([], 0).
     lislength([_ | L], N):-lislength(L, M), N is M + 1.
     
-    % Конкатинация списков
+    % Конкатенация списков
     % (список1, список2, список1+2)
     lisappend([], L, L).
     lisappend([X | L1], L2, [X | L3]):-lisappend(L1, L2, L3).
@@ -30,15 +30,23 @@
     lissubl(S, L):-lisappend(_, L1, L), lisappend(S, _, L1).
 
     % Вставка элемента в список на указанную позицию
-    % (список, элемент, позиция, итератор, результат)
-    stdlisinsert(List, Elem, Pos, Res):-same_length([Elem|List], Res), append(Bef,List0, List),length(Bef, Pos), append(Bef,[Elem|List0],Res).
-    lisinsert(Elem, 0, List, [Elem|List]).
-    lisinsert(Elem, Pos, [El|List], [El|Rest]):-Pos1 is Pos - 1, lisinsert(Elem, Pos1, List, Rest).
-    lismaxnum(L, M):-max_member(M, L).
-    lismaxnum(e(L), M):-max_member(M, L).
+    % (список, элемент, позиция, результат)
+    stdlisinsert(List, Elem, Pos, Res):-same_length([Elem|List], Res), append(Bef,List0, List), length(Bef, Pos), append(Bef,[Elem|List0],Res).
+    lisinsert(List, Elem, 0, [Elem|List]).
+    lisinsert([El|List], Elem, Pos, [El|Rest]):-Pos1 is Pos - 1, lisinsert(List, Elem, Pos1, Rest).
 
-%    lismaximum([L], N):-lismaxnum([L], -25, 0, 0, N).
-
+    % Нахождение максимального элемента в списке
+    % (список, элемент)
+    lismaxnum([], R, R).
+    lismaxnum([X|Xs], WK, R):- X >  WK, lismaxnum(Xs, X, R).
+    lismaxnum([X|Xs], WK, R):- X =< WK, lismaxnum(Xs, WK, R).
+    lismaxnume([], R, R).
+    lismaxnume([e(X,Y)|Xs], e(WK,WY), R):- Y > WY, lismaxnume(Xs, e(X,Y), R).
+    lismaxnume([e(X,Y)|Xs], e(WK,WY), R):- Y=<WY, lismaxnume(Xs, e(WK,WY), R).
+    lismaxnum([X|Xs], R):- lismaxnum(Xs, X, R).
+    lismaxnume([e(X,Y)|Xs], R):- lismaxnume(Xs, e(X,Y), R).
     
     % Пример совместного использования предикатов
-    
+    % Вставка максимального элемента из Списка1 в Список2 на Pos позицию
+    % (список1, список2, позиция, результат)
+    lisinsertmax(List1, List2, Pos, Res):-lismaxnum(List1, Elem), stdlisinsert(List2, Elem, Pos, Res).
