@@ -9,7 +9,7 @@ let mapFromFile = null;
 try {
   mapFromFile = JSON.parse(fs.readFileSync(MAP_FILE, 'utf-8'));
 } catch (err) {
-  console.log('error with opening map');
+  console.log('error while opening map');
 }
 const io = require('socket.io')(settings.port);
 const jsonToMap = (jsonStr) => {
@@ -25,6 +25,7 @@ const save = (obj, filename, dateOn) => {
                });
 };
 let map = new Map();
+let journalMap = new Map();
 if (mapFromFile) {
   for (const maps of mapFromFile) {
     let queue = new Heap((a, b) => {
@@ -41,7 +42,7 @@ if (mapFromFile) {
 
 io.on('connection', (socket) => {
   let journalMode = false;
-  let journalQueue = null;
+  let journalQueue = [];
   let queue = null;
   let currentId = -1;
   console.log(`USER CONNECTED:${socket.id}`);
@@ -53,7 +54,7 @@ io.on('connection', (socket) => {
       const res = map.set(id, new Heap((a, b) => {
         return a.priority - b.priority;
       }));
-
+      
       if (res) {
         err({id: id, msg: 'queue_created'});
       } else {
@@ -66,7 +67,9 @@ io.on('connection', (socket) => {
     if (map.delete(id)) {
       if (currentId === id) {
         queue = null;
+        journalMode = false;
       }
+      journalMap.delete(id);
       err({id: id, msg: 'queue_delete'});
     } else {
       err({id: id, msg: 'queue_null'});
@@ -88,10 +91,12 @@ io.on('connection', (socket) => {
     if (map.has(currentId)) {
       queue = map.get(currentId);
       if (journalMode) {
-        journalQueue = queue.clone();
+        journalQueue = journalMap.get(currentId);
+        journalQueue.push(obj);
+        journalMap.set(currentId, journalQueue);
       }
       
-      queue.push(JSON.parse(obj));
+      queue.push(obj);
       if (map.set(currentId, queue)) {
         err({answer: 'OK', msg: null});
       } else {
@@ -107,7 +112,7 @@ io.on('connection', (socket) => {
       queue = map.get(currentId);
       if (!queue.empty()) {
         if (journalMode) {
-          journalQueue = queue.clone();
+          // do smth when pop
         }
         const msg = queue.pop();
         if (map.set(currentId, queue) && msg) {
@@ -130,7 +135,7 @@ io.on('connection', (socket) => {
       queue = map.get(currentId);
       if (!queue.empty()) {
         const msg = queue.peek();
-        console.log(`peeked ${msg}`);
+        console.log(`peeked ${JSON.parse(msg)}`);
         err({answer: 'OK', msg: msg});
       } else {
         console.log('empty queue');
@@ -143,7 +148,27 @@ io.on('connection', (socket) => {
 
   socket.on('journal_curr_q', (mode, err) => {
     journalMode = mode;
+    if (journalMode) {
+      if (journalMap.has(currentId)) {
+        journalQueue = journalMap.get(currentId);
+      } else {
+        journalMap.set(currentId, []);
+        journalQueue = journalMap.get(currentId);
+      }
+    }
     err({msg: 'OK', id: currentId});
+  });
+
+  socket.on('show_journal', (err) => {
+    const tmp = journalMap.get(currentId);
+    
+    if (tmp && tmp.length) {
+      console.log('showing journal', tmp);
+      err({msg: 'OK', q: tmp.slice()});
+    } else {
+      console.log('empty journal or error');
+      err({msg: 'FAIL', q: null});
+    }
   });
   
   socket.on('disconnect', (reason) => {

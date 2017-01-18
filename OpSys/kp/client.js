@@ -8,7 +8,7 @@ const client = require('socket.io-client')(`${settings.host}:${settings.port}`);
 let id = 1;
 let ans = null;
 const completerFunc = (line) => {
-  const completions = 'create_queue delete_queue connect_to_queue push pop top journal_curr_q'.split(' ');
+  const completions = 'create_queue delete_queue connect_to_queue push pop top journal_curr_q show_journal'.split(' ');
   const hits = completions.filter((c) => { return c.indexOf(line) === 0 });
   return [hits.length ? hits : completions, line];
 };
@@ -16,7 +16,7 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
   completer: completerFunc,
-  prompt: 'commands:\ncreate_queue ID\ndelete_queue ID\nconnect_to_queue ID\npush Text Priority\npop\\top\njournal_curr_q on\\off\n'
+  prompt: 'commands:\ncreate_queue ID\ndelete_queue ID\nconnect_to_queue ID\npush Text Priority\npop\\top\njournal_curr_q on\\off\nshow_journal\n'
 });
 
 client.on('connect', (obj) => {
@@ -50,6 +50,15 @@ client.on('connect', (obj) => {
             console.log('connect to queue!');
           }
         });
+        break;
+      case 'show_journal':
+        client.emit('show_journal', (err) => {
+          if (err.msg === 'OK') {
+            console.log('got journal ', err.q);
+          } else {
+            console.log('journal is empty or idk');
+          }
+        })
         break;
       }
       break;
