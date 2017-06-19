@@ -1,5 +1,5 @@
 # Labs
 Something that might be interesting for you:
-* [non-template PATRICIA trie](3rd semester/Struct/PatriciaIsLovePatriciaIsLife)
-* [simple message queue in node.js + websocket](3rd semester/OpSys/kp)
-* [Naive bayess classificator in C++](4th_semester/DA/NBC)
+* [Non-template PATRICIA trie](3rd%20semester/Struct/PatriciaIsLovePatriciaIsLife)
+* [Simple message queue in node.js + websocket](3rd%20semester/OpSys/kp)
+* [Naive Bayes classifier in C++](4th_semester/DA/NBC)
