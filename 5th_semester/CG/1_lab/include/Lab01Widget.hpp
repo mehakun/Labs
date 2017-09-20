@@ -11,6 +11,7 @@ class Lab01Widget : public QWidget {
   
 public:
   Lab01Widget(QWidget *parent = nullptr);
+  ~Lab01Widget() = default;
 
 protected:
   void keyPressEvent(QKeyEvent *event) override;
@@ -23,11 +24,7 @@ private:
   double a;
   double B;
   QChartView *chartView;
-  QtCharts::QValueAxis *angularAxis;
-  QtCharts::QValueAxis *radialAxis;
   QGroupBox *boxesGroup;
-  QDoubleSpinBox *spinBoxA;
-  QDoubleSpinBox *spinBoxB;
 };
 
 #endif // CG_LAB01_WIDGET
