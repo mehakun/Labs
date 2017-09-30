@@ -3,15 +3,14 @@
 
 #include <QWidget>
 #include <QtCharts>
-#include <QGroupBox>
-#include <QDoubleSpinBox>
+#include <SettingsWidget.hpp>
 
 class Lab01Widget : public QWidget {
   Q_OBJECT
   
 public:
   Lab01Widget(QWidget *parent = nullptr);
-  ~Lab01Widget() = default;
+  virtual ~Lab01Widget() = default;
 
 protected:
   void keyPressEvent(QKeyEvent *event) override;
@@ -24,7 +23,7 @@ private:
   double a;
   double B;
   QChartView *chartView;
-  QGroupBox *boxesGroup;
+  SettingsWidget *settings;
 };
 
 #endif // CG_LAB01_WIDGET

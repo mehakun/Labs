@@ -1,4 +1,5 @@
 #include <Lab01Widget.hpp>
+#include <SettingsWidget.hpp>
 #include <QWidget>
 #include <QtCharts>
 #include <QGroupBox>
@@ -13,7 +14,7 @@ Lab01Widget::Lab01Widget(QWidget *parent) :
   QWidget(parent),
   a(2.0), B(420.0),
   chartView(new QChartView{}),
-  boxesGroup(new QGroupBox{this})
+  settings(new SettingsWidget{this, 2, 1, 2})
 { 
   createAxes();
   qDebug() << "created axes";
@@ -26,8 +27,8 @@ Lab01Widget::Lab01Widget(QWidget *parent) :
   qDebug() << "added chartView";
   layout->addWidget(valuesLabel);
   qDebug() << "added valuesLabel";
-  layout->addWidget(boxesGroup);
-  qDebug() << "added boxesGroup";
+  layout->addWidget(settings);
+  qDebug() << "added settings";
 
   setLayout(layout);
   qDebug() << "set layout";
@@ -36,29 +37,21 @@ Lab01Widget::Lab01Widget(QWidget *parent) :
 void
 Lab01Widget::createBoxes()
 {
-  auto valuesLayout = new QHBoxLayout{};
-  auto aLabel = new QLabel(tr("value for a:"));
-  auto BLabel = new QLabel(tr("maximum value for φ:"));
+  settings->setRangeAt(0.0000001, std::numeric_limits<double>::max(), 0);
+  settings->setTextAt(tr("value for a:"), 0);
+  settings->setValueAt(a, 0);
+  settings->setRangeAt(0.0, std::numeric_limits<double>::max(), 1);
+  settings->setTextAt(tr("maximum value for φ:"), 1);
+  settings->setValueAt(B, 1);
 
-  auto spinBoxA = new QDoubleSpinBox{};
-  spinBoxA->setButtonSymbols(QAbstractSpinBox::NoButtons);
-  spinBoxA->setRange(0.0000001, std::numeric_limits<double>::max());
-  spinBoxA->setValue(a);
-  connect(spinBoxA, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-          [this](double new_a){ this->a = new_a; this->changeChart(); });
+  connect(settings, &SettingsWidget::released, [this](const auto &boxes_vec){
+      if (boxes_vec[0]->getValue() != this->a || boxes_vec[1]->getValue() != this->B) {
+        this->a = boxes_vec[0]->getValue();
+        this->B = boxes_vec[1]->getValue();
 
-  auto spinBoxB = new QDoubleSpinBox{};
-  spinBoxB->setButtonSymbols(QAbstractSpinBox::NoButtons);
-  spinBoxB->setRange(0.0, std::numeric_limits<double>::max());
-  spinBoxB->setValue(B);
-  connect(spinBoxB, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-          [this](double new_B){ this->B = new_B; this->changeChart(); });
-
-  valuesLayout->addWidget(aLabel);
-  valuesLayout->addWidget(spinBoxA);
-  valuesLayout->addWidget(BLabel);
-  valuesLayout->addWidget(spinBoxB);
-  boxesGroup->setLayout(valuesLayout);
+        this->changeChart();
+      }
+    });
 }
 
 void

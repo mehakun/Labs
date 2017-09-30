@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.4)
 
 project(cg_lab01)
 
@@ -19,18 +19,29 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)
 
+find_library(SettingsWidget
+  NAMES libSettingsWidget SettingsWidget
+  HINTS "${SETTINGS_WIDGET_PATH}"
+  )
+
+if (NOT SettingsWidget)
+  message(ERROR "whoops no SettingWIdget found")
+endif()
+
 include_directories(
   ${INCLUDE_DIR}
   ${Qt5Widgets_INCLUDE_DIRS}
   ${Qt5Charts_INCLUDE_DIRS}
+  "${SETTINGS_WIDGET_PATH}/src"
   )
 
 add_executable(${PROJECT_NAME} ${INCLUDES} ${SOURCES})
-# qt5_use_modules(${PROJECT_NAME} Widgets Charts)
+
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14)
 
 target_link_libraries(
   ${PROJECT_NAME}
+  ${SettingsWidget}
   Qt5::Widgets
   Qt5::Charts
   )
