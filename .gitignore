@@ -2,3 +2,6 @@
 /Struct/Tests
 *.tar
 *~
+build*
+CMakeLists.txt.user
+
