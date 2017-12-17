@@ -1,0 +1,8 @@
+CG_CP
+matplotlib==2.0.2
+numpy==1.13.0
+NURBS-Python==2.3.5
+PyOpenGL==3.1.0
+PyOpenGL-accelerate==3.1.0
+PyQt5==5.9.2
+qtconsole==4.3.1
