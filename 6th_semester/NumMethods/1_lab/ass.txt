@@ -1,0 +1,8 @@
+Solution:
+Steps = 7
+Eigenvalues:
+[ 6.343+0.j    -1.672+1.552j -1.672-1.552j]
+
+Check by NumPy:
+Eigenvalues:
+[ 6.343+0.j    -1.671+1.552j -1.671-1.552j]
