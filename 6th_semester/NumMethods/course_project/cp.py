@@ -36,6 +36,47 @@ def calc_int(f, interval):
     return f(b) - f(a)
 
 
+def bench_methods(funcs, monte_funcs, anal_funcs, intervals, h, experiments_amount):
+    quad_times = []
+    quad_res = []
+    monte_times = []
+    monte_res = []
+    norm_times = []
+    norm_res = []
+    anal_res = []
+
+    for i in range(len(intervals)):
+        j = i + 1
+        start = time()
+        quad_ints = np.prod([simpson(interval, func, h) for func, interval in zip(funcs[:j], intervals[:j])])
+        end = time()
+        quad_res.append("%.4f" % quad_ints)
+        quad_times.append("%.4f" % (end - start))
+
+
+        start = time()
+        monte_int = monte_carlo(intervals[:j], monte_funcs[i], experiments_amount)
+        end = time()
+        monte_res.append("%.4f" % monte_int)
+        monte_times.append("%.4f" % (end - start))
+
+        start = time()
+        monte_int = monte_carlo(intervals[:j], monte_funcs[i], experiments_amount, normal_rand_generator)
+        end = time()
+        norm_res.append("%.4f" % monte_int)
+        norm_times.append("%.4f" % (end - start))
+
+        anal_res.append("%.4f" % np.prod([calc_int(func, interval) for func, interval in zip(anal_funcs[:j], intervals[:j])]))
+
+    headers = ("Arity", "Monte-Carlo with uniform", "Monte-Carlo with normal", "Simpson", "Analytical")
+    content = zip(list(range(1, len(intervals) + 1)), list(zip(monte_res, monte_times)), list(zip(norm_res, norm_times)), list(zip(quad_res, quad_times)), anal_res)
+
+    table = tabulate(list(content), headers, tablefmt="fancy_grid")
+    print(f'Intervals = {intervals}')
+    print(f'Monte-Carlo experiments {experiments_amount}')
+    print(f'Step size = {h}')
+    print(table)
+
 def main():
     funcs = [lambda x: 1 / (x + np.cbrt(x)), \
              lambda x: 1 / math.sqrt(x ** 2 + 3.22), \
@@ -59,45 +100,11 @@ def main():
                   lambda x: -(math.log(x) + 1) / x
         ]
     intervals = [(-3, -1), (1, 3), (3, 5), (5, 7), (1.2, 2), (14, 88)]
-    experiments_amount = 100
-    quad_times = []
-    quad_res = []
-    monte_times = []
-    monte_res = []
-    norm_times = []
-    norm_res = []
-    anal_res = []
-    h = 0.01
+
+    print("Format in methods is (value, time in seconds)")
+
+    for h, experiments_amount in [(0.1, 100), (0.01, 1000)]:
+        bench_methods(funcs, monte_funcs, anal_funcs, intervals, h, experiments_amount)
+
     
-    for i in range(len(intervals)):
-        j = i + 1
-        start = time()
-        quad_ints = np.prod([simpson(interval, func, h) for func, interval in zip(funcs[:j], intervals[:j])])
-        end = time()
-        quad_res.append(quad_ints)
-        quad_times.append(end - start)
-
-
-        start = time()
-        monte_int = monte_carlo(intervals[:j], monte_funcs[i], experiments_amount)
-        end = time()
-        monte_res.append(monte_int)
-        monte_times.append(end - start)
-
-        start = time()
-        monte_int = monte_carlo(intervals[:j], monte_funcs[i], experiments_amount, normal_rand_generator)
-        end = time()
-        norm_res.append(monte_int)
-        norm_times.append(end - start)
-
-        anal_res.append(np.prod([calc_int(func, interval) for func, interval in zip(anal_funcs[:j], intervals[:j])]))
-
-    headers = ("Arity", "Monte-Carlo with uniform (value, time)", "Monte-Carlo with normal (value, time)", "Simpson(value, time)", "Analytical")
-    content = zip(list(range(1, len(intervals) + 1)), list(zip(monte_res, monte_times)), list(zip(norm_res, norm_times)), list(zip(quad_res, quad_times)), anal_res)
-
-    table = tabulate(list(content), headers, tablefmt="fancy_grid")
-    print(f'Intervals = {intervals}')
-    print(f'Monte-Carlo experiments {experiments_amount}')
-    print(f'Step size = {h}')
-    print(table)
 main()
